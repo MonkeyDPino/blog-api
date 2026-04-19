@@ -3,6 +3,7 @@ import { CreateUserDto, UpdateUserDto } from './user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { Profile } from './entities/profile.entity';
 
 @Injectable()
 export class UsersService {
@@ -12,7 +13,10 @@ export class UsersService {
   ) {}
 
   private async findOne(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['profile'],
+    });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
@@ -20,7 +24,7 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+    return this.userRepository.find({ relations: ['profile'] });
   }
 
   async getUserById(id: number): Promise<User> {
@@ -42,5 +46,16 @@ export class UsersService {
     const user = await this.findOne(id);
     await this.userRepository.remove(user);
     return { message: `User with id ${id} deleted successfully` };
+  }
+
+  async getUserProfile(id: number): Promise<Profile> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['profile'],
+    });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return user.profile;
   }
 }

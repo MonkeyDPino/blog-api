@@ -7,41 +7,42 @@ import {
   Body,
   Delete,
   Put,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from './user.dto';
-import { type User } from './user.model';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  getUsers(): User[] {
-    return this.usersService.findAll();
+  async getUsers(): Promise<User[]> {
+    return await this.usersService.findAll();
   }
 
   @Get(':id')
-  getUser(@Param('id') id: string): User | undefined {
-    return this.usersService.findOne(parseInt(id));
+  async getUser(@Param('id', ParseIntPipe) id: number): Promise<User> {
+    return await this.usersService.getUserById(id);
   }
 
   @Post()
-  createUser(@Body() userData: CreateUserDto): User {
-    return this.usersService.create(userData);
+  async createUser(@Body() userData: CreateUserDto): Promise<User> {
+    return await this.usersService.create(userData);
   }
 
   @Delete(':id')
-  deleteUser(@Param('id') id: string): { message: string } {
-    return this.usersService.delete(parseInt(id))
-      ? { message: `User with id ${id} deleted successfully` }
-      : { message: `User with id ${id} not found` };
+  async deleteUser(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ message: string }> {
+    return await this.usersService.delete(id);
   }
 
   @Put(':id')
-  updateUser(
-    @Param('id') id: string,
+  async updateUser(
+    @Param('id', ParseIntPipe) id: number,
     @Body() userData: UpdateUserDto,
-  ): User | undefined {
-    return this.usersService.update(parseInt(id), userData);
+  ): Promise<User> {
+    return await this.usersService.update(id, userData);
   }
 }

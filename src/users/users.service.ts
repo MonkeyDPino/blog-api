@@ -1,52 +1,46 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { type User } from './user.model';
 import { CreateUserDto, UpdateUserDto } from './user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [
-    { id: 1, name: 'John Doe', email: 'example@gmail.com' },
-    { id: 2, name: 'Jane Doe', email: 'example2@gmail.com' },
-  ];
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
 
-  getUserById(id: number): number {
-    const position = this.users.findIndex((user) => user.id === id);
-    if (position === -1) {
-      throw new NotFoundException(`User with id ${id} not found`);
+  private async findOne(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
-    return position;
+    return user;
   }
 
-  findAll(): User[] {
-    return this.users;
+  async findAll(): Promise<User[]> {
+    return this.userRepository.find();
   }
 
-  findOne(id: number): User | undefined {
-    const position = this.getUserById(id);
-    return this.users[position];
+  async getUserById(id: number): Promise<User> {
+    return this.findOne(id);
   }
 
-  create(userData: CreateUserDto): User {
-    const newUser: User = {
-      id: this.users.length + 1,
-      ...userData,
-    };
-    this.users.push(newUser);
+  async create(userData: CreateUserDto): Promise<User> {
+    const newUser = await this.userRepository.save(userData);
     return newUser;
   }
 
-  delete(id: number): boolean {
-    const userIndex = this.getUserById(id);
-    this.users.splice(userIndex, 1);
-    return true;
+  async update(id: number, userData: UpdateUserDto): Promise<User> {
+    const user = await this.findOne(id);
+    const updatedUser = this.userRepository.merge(user, userData);
+    return updatedUser;
   }
 
-  update(id: number, userData: UpdateUserDto): User | undefined {
-    const userIndex = this.getUserById(id);
-    this.users[userIndex] = {
-      ...this.users[userIndex],
-      ...userData,
-    };
-    return this.users[userIndex];
+  async delete(id: number): Promise<{ message: string }> {
+    const user = await this.findOne(id);
+    await this.userRepository.remove(user);
+    return { message: `User with id ${id} deleted successfully` };
   }
 }

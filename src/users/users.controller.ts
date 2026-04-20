@@ -9,7 +9,7 @@ import {
   Put,
   ParseIntPipe,
 } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto } from './user.dto';
+import { CreateUserDto, UpdateUserDto } from './dtos/user.dto';
 import { User } from './entities/user.entity';
 import { Profile } from './entities/profile.entity';
 

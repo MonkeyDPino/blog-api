@@ -37,4 +37,14 @@ export class CreatePostDto {
   @IsNotEmpty({ message: 'El ID del autor es obligatorio' })
   @IsNumber({}, { message: 'El ID del autor debe ser un número' })
   authorId!: number;
+
+  @ApiPropertyOptional({
+    description: 'IDs of the categories associated with the post',
+  })
+  @IsOptional()
+  @IsNumber(
+    {},
+    { each: true, message: 'Los IDs de las categorías deben ser números' },
+  )
+  categoryIds?: number[];
 }

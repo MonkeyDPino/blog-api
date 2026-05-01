@@ -4,7 +4,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
 } from 'typeorm';
+import { Post } from './post.entity';
 
 @Entity({
   name: 'categories',
@@ -15,6 +17,9 @@ export class Category {
 
   @Column({ type: 'varchar', length: 255, unique: true })
   name!: string;
+
+  @ManyToMany(() => Post, (post) => post.categories)
+  posts!: Category[];
 
   @CreateDateColumn({
     type: 'timestamptz',

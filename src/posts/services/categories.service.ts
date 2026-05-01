@@ -30,6 +30,19 @@ export class CategoriesService {
     return this.categoryRepository.find();
   }
 
+  async findPostsByCategoryId(id: number) {
+    const category = await this.categoryRepository.findOne({
+      where: { id },
+      relations: ['posts', 'posts.author', 'posts.author.profile'],
+    });
+
+    if (!category) {
+      throw new NotFoundException(`Category with ID ${id} not found`);
+    }
+
+    return category.posts;
+  }
+
   async getCategoryById(id: number): Promise<Category> {
     return this.findOne(id);
   }

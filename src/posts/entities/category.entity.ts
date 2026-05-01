@@ -19,7 +19,7 @@ export class Category {
   name!: string;
 
   @ManyToMany(() => Post, (post) => post.categories)
-  posts!: Category[];
+  posts!: Post[];
 
   @CreateDateColumn({
     type: 'timestamptz',

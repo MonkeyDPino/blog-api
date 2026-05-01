@@ -25,7 +25,7 @@ export class Post {
   @Column({ type: 'text', nullable: true })
   content!: string;
 
-  @Column({ type: 'varchar', length: 255, name: 'cover_image', nullable: true })
+  @Column({ type: 'varchar', length: 800, name: 'cover_image', nullable: true })
   coverImage!: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })

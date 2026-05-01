@@ -25,7 +25,10 @@ export class PostsService {
   }
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
-    const newPost = await this.postRepository.save(createPostDto);
+    const newPost = await this.postRepository.save({
+      ...createPostDto,
+      author: { id: createPostDto.authorId },
+    });
     return newPost;
   }
 

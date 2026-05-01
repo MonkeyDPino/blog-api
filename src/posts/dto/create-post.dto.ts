@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreatePostDto {
   @ApiProperty({ description: 'Title of the post' })
@@ -26,4 +32,9 @@ export class CreatePostDto {
   @IsOptional()
   @IsBoolean({ message: 'El estado de borrador debe ser booleano' })
   isDraft?: boolean;
+
+  @ApiProperty({ description: 'ID of the author of the post' })
+  @IsNotEmpty({ message: 'El ID del autor es obligatorio' })
+  @IsNumber({}, { message: 'El ID del autor debe ser un número' })
+  authorId!: number;
 }

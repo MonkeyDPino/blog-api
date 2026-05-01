@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from '../../users/entities/user.entity';
 
 @Entity({
   name: 'posts',
@@ -27,6 +30,10 @@ export class Post {
 
   @Column({ type: 'boolean', default: true, name: 'is_draft' })
   isDraft!: boolean;
+
+  @ManyToOne(() => User, (user) => user.posts, { nullable: false })
+  @JoinColumn({ name: 'author_id' })
+  author!: User;
 
   @CreateDateColumn({
     type: 'timestamp with time zone',

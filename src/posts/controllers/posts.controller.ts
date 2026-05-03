@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Put,
+  Patch,
   ParseIntPipe,
   UseGuards,
   Req,
@@ -45,6 +46,13 @@ export class PostsController {
     @Body() updatePostDto: UpdatePostDto,
   ) {
     return this.postsService.update(id, updatePostDto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch(':id/publish')
+  publish(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
+    const user = req.user as Payload;
+    return this.postsService.publish(id, user.sub);
   }
 
   @UseGuards(AuthGuard('jwt'))

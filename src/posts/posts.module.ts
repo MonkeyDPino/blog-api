@@ -6,9 +6,10 @@ import { CategoriesController } from './controllers/categories.controller';
 import { Post } from './entities/post.entity';
 import { Category } from './entities/category.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AiModule } from '../ai/ai.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Post, Category])],
+  imports: [TypeOrmModule.forFeature([Post, Category]), AiModule],
   controllers: [PostsController, CategoriesController],
   providers: [PostsService, CategoriesService],
 })

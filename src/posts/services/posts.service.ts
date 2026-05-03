@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePostDto } from '../dto/create-post.dto';
 import { UpdatePostDto } from '../dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,12 +11,14 @@ import { Post } from '../entities/post.entity';
 import { Category } from '../entities/category.entity';
 import { User } from '../../users/entities/user.entity';
 import { Repository } from 'typeorm';
+import { GeminiService } from '../../ai/services/gemini.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
+    private readonly geminiService: GeminiService,
   ) {}
 
   private async findOne(id: number): Promise<Post> {
@@ -68,5 +75,31 @@ export class PostsService {
     const post = await this.findOne(id);
     await this.postRepository.remove(post);
     return { message: `Post with id ${id} deleted successfully` };
+  }
+
+  async publish(postId: number, userId: number): Promise<Post> {
+    const post = await this.findOne(postId);
+
+    if (post.author.id !== userId) {
+      throw new ForbiddenException('You do not own this post');
+    }
+
+    if (!post.content?.trim()) {
+      throw new BadRequestException('Post must have content before publishing');
+    }
+
+    if (!post.categories?.length) {
+      throw new BadRequestException(
+        'Post must have at least one category before publishing',
+      );
+    }
+
+    const summary = await this.geminiService.generateSummary(post.content);
+
+    return this.postRepository.save({
+      ...post,
+      summary: summary.slice(0, 255),
+      isDraft: false,
+    });
   }
 }

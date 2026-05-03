@@ -33,11 +33,6 @@ export class CreatePostDto {
   @IsBoolean({ message: 'El estado de borrador debe ser booleano' })
   isDraft?: boolean;
 
-  @ApiProperty({ description: 'ID of the author of the post' })
-  @IsNotEmpty({ message: 'El ID del autor es obligatorio' })
-  @IsNumber({}, { message: 'El ID del autor debe ser un número' })
-  authorId!: number;
-
   @ApiPropertyOptional({
     description: 'IDs of the categories associated with the post',
   })

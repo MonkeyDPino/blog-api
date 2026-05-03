@@ -27,8 +27,8 @@ export class PostsService {
     return post;
   }
 
-  async create(createPostDto: CreatePostDto): Promise<Post> {
-    const { authorId, categoryIds, ...postData } = createPostDto;
+  async create(createPostDto: CreatePostDto, authorId: number): Promise<Post> {
+    const { categoryIds, ...postData } = createPostDto;
     const newPost = await this.postRepository.save({
       ...postData,
       author: { id: authorId } as User,
@@ -56,12 +56,9 @@ export class PostsService {
 
   async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
     const post = await this.findOne(id);
-    const { categoryIds, authorId, ...postData } = updatePostDto;
+    const { categoryIds, ...postData } = updatePostDto;
     if (categoryIds) {
       post.categories = categoryIds.map((id) => ({ id }) as Category);
-    }
-    if (authorId) {
-      post.author = { id: authorId } as User;
     }
     const updatedPost = this.postRepository.merge(post, postData);
     return this.postRepository.save(updatedPost);

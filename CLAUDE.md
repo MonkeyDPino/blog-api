@@ -60,6 +60,7 @@ All entities use `@PrimaryGeneratedColumn()` (UUID not used) and `timestamptz` f
 - **Validation**: Global `ValidationPipe` with `transform: true`, `whitelist: true`, `forbidNonWhitelisted: true`
 - **DTOs**: `UpdateDto extends PartialType(CreateDto)` pattern. `users` imports `PartialType` from `@nestjs/mapped-types`; `posts` imports it from `@nestjs/swagger` — both work but are inconsistent.
 - **Swagger**: `@ApiProperty()` decorators on all DTO fields
+- **Formatting**: Run `pnpm run format` after any multi-file edit to avoid Prettier lint failures
 - **Error handling**: `TypeOrmExceptionFilter` handles PG unique violations and other DB errors globally
 
 ### Environment Variables

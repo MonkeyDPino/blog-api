@@ -70,6 +70,12 @@ $ mau deploy
 
 With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
 
+## For Production
+
+npm run build
+npm run typeorm migration:run
+npm run start:prod
+
 ## Resources
 
 Check out a few resources that may come in handy when working with NestJS:

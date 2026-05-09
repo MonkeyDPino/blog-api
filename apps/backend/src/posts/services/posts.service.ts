@@ -61,8 +61,15 @@ export class PostsService {
     return this.findOne(id);
   }
 
-  async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
+  async update(
+    id: number,
+    updatePostDto: UpdatePostDto,
+    requestingUserId: number,
+  ): Promise<Post> {
     const post = await this.findOne(id);
+    if (post.author.id !== requestingUserId) {
+      throw new ForbiddenException('You do not own this post');
+    }
     const { categoryIds, ...postData } = updatePostDto;
     if (categoryIds) {
       post.categories = categoryIds.map((id) => ({ id }) as Category);
@@ -71,8 +78,14 @@ export class PostsService {
     return this.postRepository.save(updatedPost);
   }
 
-  async remove(id: number): Promise<{ message: string }> {
+  async remove(
+    id: number,
+    requestingUserId: number,
+  ): Promise<{ message: string }> {
     const post = await this.findOne(id);
+    if (post.author.id !== requestingUserId) {
+      throw new ForbiddenException('You do not own this post');
+    }
     await this.postRepository.remove(post);
     return { message: `Post with id ${id} deleted successfully` };
   }

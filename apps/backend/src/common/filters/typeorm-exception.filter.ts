@@ -8,7 +8,7 @@ import {
 import { Response } from 'express';
 import { QueryFailedError } from 'typeorm';
 
-// Interfaz para la estructura del error de PostgreSQL
+// Interface for PostgreSQL error structure
 interface PostgresError {
   code: string;
   detail: string;
@@ -29,32 +29,32 @@ export class TypeOrmExceptionFilter implements ExceptionFilter {
     switch (driverError.code) {
       case '23505': // unique_violation
         statusCode = HttpStatus.CONFLICT;
-        message = 'Hubo un conflicto con los datos enviados.';
+        message = 'A record with this value already exists.';
         error = 'Conflict';
         break;
 
       case '23503': // foreign_key_violation
         statusCode = HttpStatus.BAD_REQUEST;
-        message = `La referencia a otra entidad no es válida. Detalles: ${driverError.detail}`;
+        message = 'Invalid reference — related entity does not exist.';
         error = 'Bad Request';
         break;
 
       case '23502': // not_null_violation
         statusCode = HttpStatus.BAD_REQUEST;
-        message = `Un campo requerido está vacío. Detalles: ${driverError.detail}`;
+        message = 'A required field is missing.';
         error = 'Bad Request';
         break;
 
       case '22P02': // invalid_text_representation
         statusCode = HttpStatus.BAD_REQUEST;
-        message = 'El formato de uno de los valores enviados es incorrecto.';
+        message = 'The format of one of the submitted values is incorrect.';
         error = 'Bad Request';
         break;
 
       default:
-        // Para cualquier otro error de base de datos no manejado explícitamente
+        // Any other unhandled database error
         statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-        message = 'Ha ocurrido un error inesperado en la base de datos.';
+        message = 'An unexpected database error occurred.';
         error = 'Internal Server Error';
     }
 

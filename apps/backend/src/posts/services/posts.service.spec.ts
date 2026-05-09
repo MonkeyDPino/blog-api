@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { PostsService } from './posts.service';
 import { Post } from '../entities/post.entity';
+import { GeminiService } from '../../ai/services/gemini.service';
 
 describe('PostsService', () => {
   let service: PostsService;
@@ -12,7 +13,16 @@ describe('PostsService', () => {
         PostsService,
         {
           provide: getRepositoryToken(Post),
-          useValue: {},
+          useValue: {
+            findOne: jest.fn(),
+            save: jest.fn(),
+            remove: jest.fn(),
+            find: jest.fn(),
+          },
+        },
+        {
+          provide: GeminiService,
+          useValue: { generatePostSummary: jest.fn() },
         },
       ],
     }).compile();

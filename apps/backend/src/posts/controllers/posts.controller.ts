@@ -64,14 +64,20 @@ export class PostsController {
   @ApiOperation({ summary: 'Update a blog post' })
   @ApiParam({ name: 'id', type: Number, description: 'Post ID' })
   @ApiResponse({ status: 200, description: 'Post updated', type: PostEntity })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden — only the author can update',
+  })
   @ApiResponse({ status: 404, description: 'Post not found' })
   @UseGuards(AuthGuard('jwt'))
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePostDto: UpdatePostDto,
+    @Req() req: Request,
   ) {
-    return this.postsService.update(id, updatePostDto);
+    const user = req.user as Payload;
+    return this.postsService.update(id, updatePostDto, user.sub);
   }
 
   @ApiJwtAuth()
@@ -94,10 +100,15 @@ export class PostsController {
   @ApiOperation({ summary: 'Delete a blog post' })
   @ApiParam({ name: 'id', type: Number, description: 'Post ID' })
   @ApiResponse({ status: 200, description: 'Post deleted' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden — only the author can delete',
+  })
   @ApiResponse({ status: 404, description: 'Post not found' })
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.postsService.remove(id);
+  remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
+    const user = req.user as Payload;
+    return this.postsService.remove(id, user.sub);
   }
 }

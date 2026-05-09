@@ -11,6 +11,7 @@ import {
   Query,
   UseGuards,
   Req,
+  HttpCode,
 } from '@nestjs/common';
 import {
   ApiOperation,
@@ -115,6 +116,7 @@ export class PostsController {
   }
 
   @Post(':id/suggest-categories')
+  @HttpCode(200)
   @UseGuards(AuthGuard('jwt'))
   @ApiJwtAuth()
   @ApiOperation({ summary: 'Suggest categories for a post using AI' })

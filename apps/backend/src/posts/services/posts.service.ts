@@ -23,6 +23,15 @@ export class PostsService {
     private readonly geminiService: GeminiService,
   ) {}
 
+  private async syncSearchVector(
+    post: Pick<Post, 'id' | 'title' | 'content'>,
+  ): Promise<void> {
+    await this.postRepository.query(
+      `UPDATE posts SET search_vector = to_tsvector('english', coalesce($1, '') || ' ' || coalesce($2, '')) WHERE id = $3`,
+      [post.title, post.content, post.id],
+    );
+  }
+
   private async findOne(id: number): Promise<Post> {
     const post = await this.postRepository.findOne({
       where: { id },
@@ -44,10 +53,7 @@ export class PostsService {
       categories: (categoryIds ?? []).map((id) => ({ id }) as Category),
     });
     const post = await this.findOne(newPost.id);
-    await this.postRepository.query(
-      `UPDATE posts SET search_vector = to_tsvector('english', coalesce($1, '') || ' ' || coalesce($2, '')) WHERE id = $3`,
-      [post.title, post.content, post.id],
-    );
+    await this.syncSearchVector(post);
     return post;
   }
 
@@ -82,7 +88,9 @@ export class PostsService {
       post.categories = categoryIds.map((id) => ({ id }) as Category);
     }
     const updatedPost = this.postRepository.merge(post, postData);
-    return this.postRepository.save(updatedPost);
+    const saved = await this.postRepository.save(updatedPost);
+    await this.syncSearchVector(saved);
+    return saved;
   }
 
   async remove(
@@ -121,10 +129,7 @@ export class PostsService {
       summary: summary.slice(0, 255),
       isDraft: false,
     });
-    await this.postRepository.query(
-      `UPDATE posts SET search_vector = to_tsvector('english', coalesce($1, '') || ' ' || coalesce($2, '')) WHERE id = $3`,
-      [saved.title, saved.content, saved.id],
-    );
+    await this.syncSearchVector(saved);
     return saved;
   }
 

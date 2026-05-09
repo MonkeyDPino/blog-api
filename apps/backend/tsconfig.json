@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "types": ["node", "jest"],
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@blog/types": ["../../packages/types/src/index.ts"],
+      "@blog/types/*": ["../../packages/types/src/*"]
+    }
+  }
+}

@@ -27,6 +27,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
         JWT_AUDIENCE: Joi.string().required(),
         JWT_REFRESH_SECRET: Joi.string().required(),
         GEMINI_API_KEY: Joi.string().optional(),
+        GEMINI_MODEL: Joi.string().default('gemini-2.0-flash-lite'),
         PORT: Joi.number().default(3000),
         THROTTLE_TTL: Joi.number().default(60_000),
         THROTTLE_LIMIT: Joi.number().default(10),

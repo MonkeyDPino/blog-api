@@ -22,7 +22,12 @@ describe('GeminiService', () => {
         GeminiService,
         {
           provide: ConfigService,
-          useValue: { get: jest.fn().mockReturnValue('fake-api-key') },
+          useValue: {
+            get: jest.fn().mockImplementation((key: string) => {
+              if (key === 'GEMINI_MODEL') return 'gemini-2.0-flash-lite';
+              return 'fake-api-key';
+            }),
+          },
         },
       ],
     }).compile();
@@ -49,7 +54,7 @@ describe('GeminiService', () => {
       expect(result).toBe('A concise summary.');
       expect(mockGenerateContent).toHaveBeenCalledWith(
         expect.objectContaining({
-          model: 'gemini-3.1-flash-lite-preview',
+          model: 'gemini-2.0-flash-lite',
           contents: 'Some long blog post content',
         }),
       );
@@ -70,7 +75,7 @@ describe('GeminiService', () => {
 
       expect(mockGenerateContent).toHaveBeenCalledWith(
         expect.objectContaining({
-          model: 'gemini-3.1-flash-lite-preview',
+          model: 'gemini-2.0-flash-lite',
           contents: 'Blog content here',
           config: expect.objectContaining({
             temperature: 0.4,

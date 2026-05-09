@@ -18,6 +18,8 @@ export class PostsService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
     private readonly geminiService: GeminiService,
   ) {}
 
@@ -41,7 +43,12 @@ export class PostsService {
       author: { id: authorId } as User,
       categories: (categoryIds ?? []).map((id) => ({ id }) as Category),
     });
-    return this.findOne(newPost.id);
+    const post = await this.findOne(newPost.id);
+    await this.postRepository.query(
+      `UPDATE posts SET search_vector = to_tsvector('english', coalesce($1, '') || ' ' || coalesce($2, '')) WHERE id = $3`,
+      [post.title, post.content, post.id],
+    );
+    return post;
   }
 
   async findAll(): Promise<Post[]> {
@@ -109,10 +116,54 @@ export class PostsService {
 
     const summary = await this.geminiService.generateSummary(post.content);
 
-    return this.postRepository.save({
+    const saved = await this.postRepository.save({
       ...post,
       summary: summary.slice(0, 255),
       isDraft: false,
     });
+    await this.postRepository.query(
+      `UPDATE posts SET search_vector = to_tsvector('english', coalesce($1, '') || ' ' || coalesce($2, '')) WHERE id = $3`,
+      [saved.title, saved.content, saved.id],
+    );
+    return saved;
+  }
+
+  async suggestCategories(
+    postId: number,
+    userId: number,
+  ): Promise<{ suggestions: string[] }> {
+    const post = await this.findOne(postId);
+    if (post.author.id !== userId) {
+      throw new ForbiddenException('You do not own this post');
+    }
+    const categories = await this.categoryRepository.find();
+    const availableCategories = categories.map((c) => c.name);
+    const suggestions = await this.geminiService.suggestCategories(
+      post.content ?? '',
+      availableCategories,
+    );
+    return { suggestions };
+  }
+
+  async search(q: string): Promise<Post[]> {
+    if (!q?.trim()) return [];
+    const tsquery = q
+      .trim()
+      .split(/\s+/)
+      .map((w) => `${w}:*`)
+      .join(' & ');
+    return this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.author', 'author')
+      .leftJoinAndSelect('author.profile', 'profile')
+      .leftJoinAndSelect('post.categories', 'categories')
+      .where(`post.search_vector @@ to_tsquery('english', :tsquery)`, {
+        tsquery,
+      })
+      .orderBy(
+        `ts_rank(post.search_vector, to_tsquery('english', :tsquery))`,
+        'DESC',
+      )
+      .getMany();
   }
 }

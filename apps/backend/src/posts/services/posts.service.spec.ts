@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { Post } from '../entities/post.entity';
+import { Category } from '../entities/category.entity';
 import { GeminiService } from '../../ai/services/gemini.service';
 import { buildPost, buildUser } from '../../../test/factories';
 
@@ -18,8 +19,13 @@ describe('PostsService', () => {
     find: jest.Mock;
     merge: jest.Mock;
     remove: jest.Mock;
+    query: jest.Mock;
   };
-  let geminiService: { generateSummary: jest.Mock };
+  let categoryRepository: { find: jest.Mock };
+  let geminiService: {
+    generateSummary: jest.Mock;
+    suggestCategories: jest.Mock;
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -33,17 +39,28 @@ describe('PostsService', () => {
             find: jest.fn(),
             merge: jest.fn(),
             remove: jest.fn(),
+            query: jest.fn().mockResolvedValue(undefined),
+          },
+        },
+        {
+          provide: getRepositoryToken(Category),
+          useValue: {
+            find: jest.fn(),
           },
         },
         {
           provide: GeminiService,
-          useValue: { generateSummary: jest.fn() },
+          useValue: {
+            generateSummary: jest.fn(),
+            suggestCategories: jest.fn(),
+          },
         },
       ],
     }).compile();
 
     service = module.get<PostsService>(PostsService);
     postRepository = module.get(getRepositoryToken(Post));
+    categoryRepository = module.get(getRepositoryToken(Category));
     geminiService = module.get(GeminiService);
   });
 
@@ -246,6 +263,45 @@ describe('PostsService', () => {
         expect.objectContaining({ summary: longSummary.slice(0, 255) }),
       );
       expect(result.summary).toHaveLength(255);
+    });
+  });
+
+  describe('search', () => {
+    it('REQ-3.14: returns empty array when query is empty', async () => {
+      const result = await service.search('');
+      expect(result).toEqual([]);
+    });
+
+    it('REQ-3.15: returns empty array when query is whitespace', async () => {
+      const result = await service.search('   ');
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('suggestCategories', () => {
+    it('REQ-3.16: throws ForbiddenException when requester is not the author', async () => {
+      const author = buildUser({ id: 1 });
+      const post = buildPost({ id: 1, author });
+      postRepository.findOne.mockResolvedValue(post);
+
+      await expect(service.suggestCategories(1, 99)).rejects.toThrow(
+        ForbiddenException,
+      );
+    });
+
+    it('REQ-3.17: returns suggestions from GeminiService', async () => {
+      const author = buildUser({ id: 1 });
+      const post = buildPost({ id: 1, author, content: 'Some content' });
+      postRepository.findOne.mockResolvedValue(post);
+      categoryRepository.find.mockResolvedValue([
+        { id: 1, name: 'Tech' },
+        { id: 2, name: 'Science' },
+      ]);
+      geminiService.suggestCategories.mockResolvedValue(['Tech']);
+
+      const result = await service.suggestCategories(1, 1);
+
+      expect(result).toEqual({ suggestions: ['Tech'] });
     });
   });
 });

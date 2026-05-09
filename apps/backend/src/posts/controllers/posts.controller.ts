@@ -8,10 +8,17 @@ import {
   Put,
   Patch,
   ParseIntPipe,
+  Query,
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { type Request } from 'express';
 import { PostsService } from '../services/posts.service';
@@ -45,6 +52,17 @@ export class PostsController {
   @Get()
   findAll() {
     return this.postsService.findAll();
+  }
+
+  @ApiOperation({ summary: 'Full-text search posts by keyword' })
+  @ApiQuery({ name: 'q', required: false, description: 'Search query' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns matching posts ordered by relevance',
+  })
+  @Get('search')
+  search(@Query('q') q: string): Promise<PostEntity[]> {
+    return this.postsService.search(q);
   }
 
   @ApiOperation({ summary: 'Get a blog post by ID' })
@@ -94,6 +112,23 @@ export class PostsController {
   publish(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
     const user = req.user as Payload;
     return this.postsService.publish(id, user.sub);
+  }
+
+  @Post(':id/suggest-categories')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiJwtAuth()
+  @ApiOperation({ summary: 'Suggest categories for a post using AI' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns AI-suggested category names',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden — not the post author' })
+  @ApiResponse({ status: 404, description: 'Post not found' })
+  suggestCategories(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: Request,
+  ): Promise<{ suggestions: string[] }> {
+    return this.postsService.suggestCategories(id, (req.user as Payload).sub);
   }
 
   @ApiJwtAuth()

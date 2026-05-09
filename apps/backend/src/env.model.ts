@@ -9,6 +9,7 @@ export interface Env {
   JWT_AUDIENCE: string;
   JWT_REFRESH_SECRET: string;
   GEMINI_API_KEY: string;
+  GEMINI_MODEL: string;
   THROTTLE_TTL: number;
   THROTTLE_LIMIT: number;
 }

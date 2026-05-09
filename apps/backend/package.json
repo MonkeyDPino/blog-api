@@ -82,8 +82,33 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.ts",
+      "!**/*.module.ts",
+      "!**/main.ts",
+      "!**/*.dto.ts",
+      "!**/*.entity.ts",
+      "!**/*.interface.ts",
+      "!**/migrations/**",
+      "!**/*.spec.ts"
     ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      ".*\\.controller\\.ts$",
+      ".*\\.filter\\.ts$",
+      ".*\\.strategy\\.ts$",
+      ".*\\.guard\\.ts$",
+      ".*categories\\.service\\.ts$",
+      ".*ormconfig\\.ts$",
+      ".*\\.decorator\\.ts$"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "functions": 70,
+        "lines": 70,
+        "statements": 70
+      }
+    },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {

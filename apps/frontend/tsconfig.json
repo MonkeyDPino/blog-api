@@ -9,7 +9,6 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "types": ["node"],
     "plugins": [{ "name": "next" }],
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
       "@blog/types": ["../../packages/types/src/index.ts"],

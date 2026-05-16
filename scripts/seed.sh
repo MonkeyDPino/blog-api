@@ -17,7 +17,8 @@ PGUSER="${PGUSER:-blog_user}"
 export PGPASSWORD="${PGPASSWORD:-blog_password}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BACKEND_DIR="$SCRIPT_DIR/../apps/backend"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+BACKEND_DIR="$REPO_ROOT/apps/backend"
 
 echo "→ Generating bcrypt hashes (salt rounds: 10)…"
 
@@ -31,9 +32,20 @@ hash_password() {
 ADMIN_HASH=$(hash_password 'Admin1234!')
 WRITER_HASH=$(hash_password 'Writer1234!')
 
+# Use local psql if available, otherwise pipe through the Docker container
+run_psql() {
+  if command -v psql >/dev/null 2>&1; then
+    psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE"
+  else
+    echo "psql not found — using docker compose exec postgres …"
+    docker compose -f "$REPO_ROOT/docker-compose.yml" exec -T postgres \
+      psql -U "$PGUSER" -d "$PGDATABASE"
+  fi
+}
+
 echo "→ Connecting to $PGUSER@$PGHOST:$PGPORT/$PGDATABASE"
 
-psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" <<SQL
+run_psql <<SQL
 
 -- ─────────────────────────────────────────────
 -- PROFILES  (5 users — real face placeholders)

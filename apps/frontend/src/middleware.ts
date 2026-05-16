@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const accessToken = request.cookies.get('access_token');
-  if (!accessToken?.value) {
+  const session = request.cookies.get('session_active');
+  if (!session?.value) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirect', request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);

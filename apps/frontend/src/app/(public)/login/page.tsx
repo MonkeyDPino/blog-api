@@ -14,7 +14,7 @@ export default function LoginPage() {
         <div className="rounded-xl border border-border bg-surface p-8 shadow-sm">
           <Suspense
             fallback={
-              <div className="h-48 animate-pulse rounded-lg bg-slate-100" />
+              <div className="h-48 animate-pulse rounded-lg bg-surface" />
             }
           >
             <LoginForm />

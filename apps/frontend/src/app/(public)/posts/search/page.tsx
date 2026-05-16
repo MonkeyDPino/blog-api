@@ -39,8 +39,8 @@ export default function SearchPage() {
 
   return (
     <div>
-      <div className="mb-8 border-b border-border pb-6">
-        <h1 className="font-serif text-4xl font-bold text-ink">Search</h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-ink">Search</h1>
         <p className="mt-1 text-sm text-muted">Find articles by keyword</p>
       </div>
 

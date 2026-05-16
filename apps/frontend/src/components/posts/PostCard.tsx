@@ -17,9 +17,9 @@ export function PostCard({ post }: PostCardProps) {
     : post.author.email;
 
   const excerpt = post.summary
-    ? truncate(post.summary, 140)
+    ? truncate(post.summary, 130)
     : post.content
-      ? truncate(post.content.replace(/[#*`>_~\[\]]/g, ''), 140)
+      ? truncate(post.content.replace(/[#*`>_~\[\]]/g, ''), 130)
       : null;
 
   const publishedAt = new Date(post.createdAt).toLocaleDateString('en-US', {
@@ -29,7 +29,7 @@ export function PostCard({ post }: PostCardProps) {
   });
 
   return (
-    <article className="group flex flex-col rounded-xl border border-border bg-surface overflow-hidden hover:shadow-md hover:border-primary/30 transition-all duration-200">
+    <article className="group flex flex-col rounded-xl border border-border bg-surface overflow-hidden hover:border-primary/40 transition-colors duration-200">
       {post.coverImage && (
         <div className="aspect-video overflow-hidden">
           <img
@@ -44,7 +44,7 @@ export function PostCard({ post }: PostCardProps) {
         {post.categories.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">
             {post.categories.map((cat) => (
-              <Badge key={cat.id} variant="secondary">
+              <Badge key={cat.id} variant="default">
                 {cat.name}
               </Badge>
             ))}
@@ -66,10 +66,10 @@ export function PostCard({ post }: PostCardProps) {
           </p>
         )}
 
-        <footer className="flex items-center gap-1.5 text-xs text-muted mt-auto pt-3 border-t border-border">
-          <span className="font-medium text-ink">{authorName}</span>
+        <footer className="mt-auto flex items-center gap-1.5 text-xs text-muted pt-3 border-t border-border">
+          <span className="font-medium text-ink/80">{authorName}</span>
           <span>·</span>
-          <span>{publishedAt}</span>
+          <time>{publishedAt}</time>
         </footer>
       </div>
     </article>

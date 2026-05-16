@@ -38,27 +38,27 @@ export default async function ProfilePage({ params }: Props) {
 
   return (
     <div>
-      <div className="mb-10 flex items-center gap-5 border-b border-border pb-8">
+      <div className="mb-10 flex items-center gap-4">
         {user.profile?.avatarUrl ? (
           <img
             src={user.profile.avatarUrl}
             alt={fullName}
-            className="h-16 w-16 rounded-full object-cover ring-2 ring-border"
+            className="h-14 w-14 rounded-full object-cover ring-2 ring-border"
           />
         ) : (
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-2xl font-bold text-primary font-serif">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-xl font-bold text-primary">
             {fullName.charAt(0).toUpperCase()}
           </div>
         )}
         <div>
-          <h1 className="font-serif text-3xl font-bold text-ink">{fullName}</h1>
+          <h1 className="text-2xl font-bold text-ink">{fullName}</h1>
           <p className="text-sm text-muted mt-0.5">{user.email}</p>
         </div>
       </div>
 
-      <h2 className="font-serif mb-6 text-xl font-semibold text-ink">
+      <h2 className="mb-5 text-sm font-semibold uppercase tracking-wider text-muted">
         Articles{' '}
-        <span className="text-muted font-sans font-normal text-sm">
+        <span className="font-normal normal-case tracking-normal">
           ({publicPosts.length})
         </span>
       </h2>

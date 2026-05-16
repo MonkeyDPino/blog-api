@@ -13,16 +13,16 @@ export function Navbar() {
     : (user?.email ?? '');
 
   return (
-    <header className="border-b border-border bg-surface">
-      <nav className="container mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+    <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md">
+      <nav className="container mx-auto flex max-w-6xl items-center justify-between px-4 h-14">
         <Link
           href="/"
-          className="font-serif text-2xl italic font-bold text-ink hover:text-primary transition-colors"
+          className="font-semibold text-ink hover:text-primary transition-colors"
         >
           Blog App
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           {isLoading ? (
             <>
               <Skeleton className="h-8 w-24" />
@@ -30,7 +30,7 @@ export function Navbar() {
             </>
           ) : user ? (
             <>
-              <span className="hidden sm:block text-sm text-muted mr-1">
+              <span className="hidden sm:block text-sm text-muted mr-2 px-2">
                 {fullName}
               </span>
               <Button variant="ghost" size="sm" asChild>

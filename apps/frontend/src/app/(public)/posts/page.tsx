@@ -20,19 +20,17 @@ export default async function PostsPage() {
 
   return (
     <div>
-      <div className="mb-10 flex items-end justify-between border-b border-border pb-6">
+      <div className="mb-10 flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-4xl font-bold text-ink">
-            Latest Posts
-          </h1>
-          <p className="mt-1 text-muted text-sm">
+          <h1 className="text-3xl font-bold text-ink">Latest Posts</h1>
+          <p className="mt-1 text-sm text-muted">
             {publicPosts.length}{' '}
             {publicPosts.length === 1 ? 'article' : 'articles'} published
           </p>
         </div>
         <Link
           href="/posts/search"
-          className="text-sm text-primary hover:underline font-medium"
+          className="text-sm text-muted hover:text-primary transition-colors"
         >
           Search →
         </Link>

@@ -17,8 +17,8 @@ export default async function CategoriesPage() {
 
   return (
     <div>
-      <div className="mb-10 border-b border-border pb-6">
-        <h1 className="font-serif text-4xl font-bold text-ink">Categories</h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-ink">Categories</h1>
         <p className="mt-1 text-sm text-muted">Browse posts by topic</p>
       </div>
 
@@ -30,7 +30,7 @@ export default async function CategoriesPage() {
             <Link
               key={cat.id}
               href={`/categories/${cat.id}`}
-              className="group rounded-xl border border-border bg-surface overflow-hidden hover:shadow-md hover:border-primary/30 transition-all duration-200"
+              className="group rounded-xl border border-border bg-surface overflow-hidden hover:border-primary/40 transition-colors duration-200"
             >
               {cat.coverImage && (
                 <div className="aspect-video overflow-hidden">
@@ -42,7 +42,7 @@ export default async function CategoriesPage() {
                 </div>
               )}
               <div className="p-5">
-                <h2 className="font-serif font-semibold text-lg text-ink group-hover:text-primary transition-colors">
+                <h2 className="font-semibold text-ink group-hover:text-primary transition-colors">
                   {cat.name}
                 </h2>
                 {cat.description && (

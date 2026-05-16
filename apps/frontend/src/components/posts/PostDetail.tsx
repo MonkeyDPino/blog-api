@@ -36,32 +36,32 @@ export function PostDetail({ post }: PostDetailProps) {
         {post.categories.length > 0 && (
           <div className="mb-4 flex flex-wrap gap-2">
             {post.categories.map((cat) => (
-              <Badge key={cat.id} variant="secondary">
+              <Badge key={cat.id} variant="default">
                 {cat.name}
               </Badge>
             ))}
           </div>
         )}
 
-        <h1 className="font-serif text-4xl font-bold leading-tight text-ink mb-5">
+        <h1 className="font-serif text-4xl font-bold leading-tight text-ink sm:text-5xl">
           {post.title}
         </h1>
 
-        <div className="flex items-center gap-2 text-sm text-muted border-b border-border pb-6">
-          <span className="font-medium text-ink">{authorName}</span>
+        <div className="mt-4 flex items-center gap-2 text-sm text-muted">
+          <span className="font-medium text-ink/70">{authorName}</span>
           <span>·</span>
           <time>{publishedAt}</time>
         </div>
       </header>
 
       {post.summary && (
-        <p className="mb-8 text-lg text-muted italic border-l-4 border-primary pl-5 leading-relaxed">
+        <p className="mb-8 text-base text-muted italic leading-relaxed border-l-2 border-primary/50 pl-4">
           {post.summary}
         </p>
       )}
 
       {post.content && (
-        <div className="prose prose-slate max-w-none prose-headings:font-serif prose-headings:text-ink prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-blockquote:border-primary prose-code:text-primary">
+        <div className="prose prose-invert max-w-none prose-headings:font-serif prose-headings:font-bold prose-headings:text-ink prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-2 prose-blockquote:border-primary/50 prose-blockquote:text-muted prose-code:text-primary prose-code:bg-surface prose-code:rounded prose-code:px-1 prose-strong:text-ink prose-p:text-muted prose-p:leading-relaxed prose-li:text-muted">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {post.content}
           </ReactMarkdown>

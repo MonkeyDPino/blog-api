@@ -8,6 +8,7 @@ import { usersApi } from '@/lib/api/users';
 import { postsApi } from '@/lib/api/posts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 
 export default function DashboardPage() {
@@ -42,7 +43,7 @@ export default function DashboardPage() {
     return (
       <div className="space-y-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-14 animate-pulse rounded-xl bg-slate-100" />
+          <Skeleton key={i} className="h-14 w-full" />
         ))}
       </div>
     );
@@ -50,14 +51,14 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <div className="mb-10 flex items-end justify-between border-b border-border pb-6">
+      <div className="mb-10 flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-4xl font-bold text-ink">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-ink">Dashboard</h1>
           <p className="mt-1 text-sm text-muted">
             {published.length} published · {drafts.length} drafts
           </p>
         </div>
-        <Button asChild variant="cta">
+        <Button asChild>
           <Link href="/posts/new">New post</Link>
         </Button>
       </div>
@@ -92,14 +93,14 @@ function PostSection({
 }: PostSectionProps) {
   return (
     <section className="mb-10">
-      <h2 className="font-serif mb-4 text-xl font-semibold text-ink">
+      <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted">
         {title}{' '}
-        <span className="text-muted font-sans font-normal text-sm">
+        <span className="font-normal normal-case tracking-normal">
           ({posts.length})
         </span>
       </h2>
       {posts.length === 0 ? (
-        <p className="text-sm text-muted py-6 text-center border border-dashed border-border rounded-xl">
+        <p className="rounded-lg border border-dashed border-border py-8 text-center text-sm text-muted">
           None yet.
         </p>
       ) : (
@@ -107,25 +108,25 @@ function PostSection({
           {posts.map((post) => (
             <li
               key={post.id}
-              className="flex items-center justify-between rounded-xl border border-border bg-surface px-5 py-3.5 hover:border-primary/30 transition-colors"
+              className="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-3 hover:border-primary/30 transition-colors"
             >
               <div className="flex items-center gap-3 min-w-0">
                 {showDraftBadge && (
-                  <Badge variant="outline" className="shrink-0 text-muted">
+                  <Badge variant="secondary" className="shrink-0">
                     Draft
                   </Badge>
                 )}
-                <span className="truncate font-medium text-ink">
+                <span className="truncate text-sm font-medium text-ink">
                   {post.title}
                 </span>
               </div>
-              <div className="flex shrink-0 items-center gap-2 ml-4">
+              <div className="flex shrink-0 items-center gap-1.5 ml-4">
                 {!post.isDraft && (
                   <Button variant="ghost" size="sm" asChild>
                     <Link href={`/posts/${post.id}`}>View</Link>
                   </Button>
                 )}
-                <Button variant="outline" size="sm" asChild>
+                <Button variant="ghost" size="sm" asChild>
                   <Link href={`/posts/${post.id}/edit`}>Edit</Link>
                 </Button>
                 <Button

@@ -21,7 +21,7 @@ export default function AdminLayout({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-neutral-500">Loading…</p>
+        <p className="text-muted">Loading…</p>
       </div>
     );
   }
@@ -30,8 +30,10 @@ export default function AdminLayout({
 
   return (
     <div>
-      <div className="bg-slate-800 text-white px-4 py-2 text-sm font-medium tracking-wide">
-        Admin Panel
+      <div className="border-b border-border px-4 py-2">
+        <p className="text-xs font-medium uppercase tracking-widest text-muted">
+          Admin Panel
+        </p>
       </div>
       <div className="container mx-auto px-4 py-6">{children}</div>
     </div>

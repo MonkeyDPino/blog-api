@@ -32,8 +32,8 @@ export default async function EditPostPage({ params }: Props) {
 
   return (
     <div>
-      <div className="mb-8 border-b border-border pb-6">
-        <h1 className="font-serif text-4xl font-bold text-ink">Edit post</h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-ink">Edit post</h1>
         <p className="mt-1 text-sm text-muted">
           Make changes and publish when ready
         </p>

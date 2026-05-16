@@ -63,9 +63,9 @@ export default function AdminCategoriesPage() {
 
   return (
     <div>
-      <div className="mb-10 flex items-end justify-between border-b border-border pb-6">
+      <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-4xl font-bold text-ink">Categories</h1>
+          <h1 className="text-3xl font-bold text-ink">Categories</h1>
           <p className="mt-1 text-sm text-muted">Manage content categories</p>
         </div>
         <Button asChild>
@@ -74,30 +74,30 @@ export default function AdminCategoriesPage() {
       </div>
 
       {isLoading ? (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-14 w-full rounded-xl" />
+            <Skeleton key={i} className="h-14 w-full" />
           ))}
         </div>
       ) : categories.length === 0 ? (
-        <p className="py-12 text-center text-muted border border-dashed border-border rounded-xl">
+        <p className="rounded-lg border border-dashed border-border py-12 text-center text-muted">
           No categories yet.
         </p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-left text-muted border-b border-border">
+            <thead className="bg-surface text-left text-muted border-b border-border">
               <tr>
                 <th className="px-5 py-3.5 font-medium">Name</th>
                 <th className="px-5 py-3.5 font-medium">Description</th>
                 <th className="px-5 py-3.5 font-medium text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border bg-surface">
+            <tbody className="divide-y divide-border">
               {categories.map((cat) => (
                 <tr
                   key={cat.id}
-                  className="hover:bg-slate-50 transition-colors"
+                  className="hover:bg-surface/50 transition-colors"
                 >
                   <td className="px-5 py-3.5 font-semibold text-ink">
                     {cat.name}
@@ -136,7 +136,7 @@ export default function AdminCategoriesPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="font-serif">Delete category</DialogTitle>
+            <DialogTitle>Delete category</DialogTitle>
             <DialogDescription>
               Are you sure you want to delete &quot;{deleteTarget?.name}&quot;?
               This action cannot be undone.

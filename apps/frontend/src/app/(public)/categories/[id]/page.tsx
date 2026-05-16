@@ -44,12 +44,10 @@ export default async function CategoryPage({ params }: Props) {
         </div>
       )}
 
-      <div className="mb-10 border-b border-border pb-6">
-        <h1 className="font-serif text-4xl font-bold text-ink">
-          {category.name}
-        </h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-ink">{category.name}</h1>
         {category.description && (
-          <p className="mt-2 text-muted">{category.description}</p>
+          <p className="mt-2 text-sm text-muted">{category.description}</p>
         )}
         <p className="mt-1 text-sm text-muted">
           {publicPosts.length}{' '}

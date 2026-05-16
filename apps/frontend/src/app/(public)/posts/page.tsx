@@ -1,41 +1,84 @@
-import Link from 'next/link';
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
 import type { IPost } from '@blog/types';
+import { postsApi } from '@/lib/api/posts';
 import { PostList } from '@/components/posts/PostList';
+import { Input } from '@/components/ui/input';
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? 'https://blog-api.pinodev.app';
+export default function PostsPage() {
+  const [allPosts, setAllPosts] = useState<IPost[]>([]);
+  const [results, setResults] = useState<IPost[] | null>(null);
+  const [query, setQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-export default async function PostsPage() {
-  let posts: IPost[] = [];
-  try {
-    const res = await fetch(`${API_BASE}/posts`, { cache: 'no-store' });
-    if (res.ok) {
-      posts = await res.json();
+  useEffect(() => {
+    postsApi
+      .getAll()
+      .then((posts) => {
+        setAllPosts(posts.filter((p) => !p.isDraft));
+      })
+      .catch(() => {})
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    const q = query.trim();
+
+    if (!q) {
+      setResults(null);
+      return;
     }
-  } catch {
-    // Network error — render empty list
-  }
 
-  const publicPosts = posts.filter((p) => !p.isDraft);
+    timerRef.current = setTimeout(async () => {
+      try {
+        const found = await postsApi.search(q);
+        setResults(found.filter((p) => !p.isDraft));
+      } catch {
+        setResults([]);
+      }
+    }, 400);
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [query]);
+
+  const displayed = results ?? allPosts;
+  const q = query.trim();
 
   return (
     <div>
-      <div className="mb-10 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-ink">Latest Posts</h1>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-ink">Latest Posts</h1>
+        {!isLoading && (
           <p className="mt-1 text-sm text-muted">
-            {publicPosts.length}{' '}
-            {publicPosts.length === 1 ? 'article' : 'articles'} published
+            {q && results !== null
+              ? `${results.length} result${results.length !== 1 ? 's' : ''} for "${query}"`
+              : `${allPosts.length} ${allPosts.length === 1 ? 'article' : 'articles'} published`}
           </p>
-        </div>
-        <Link
-          href="/posts/search"
-          className="text-sm text-muted hover:text-primary transition-colors"
-        >
-          Search →
-        </Link>
+        )}
       </div>
-      <PostList posts={publicPosts} />
+
+      <Input
+        type="search"
+        placeholder="Search articles…"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        className="mb-8 max-w-xl text-base"
+      />
+
+      {isLoading ? (
+        <p className="text-muted">Loading…</p>
+      ) : q && results !== null && results.length === 0 ? (
+        <p className="text-muted">
+          No results for &quot;{query}&quot;
+        </p>
+      ) : (
+        <PostList posts={displayed} />
+      )}
     </div>
   );
 }

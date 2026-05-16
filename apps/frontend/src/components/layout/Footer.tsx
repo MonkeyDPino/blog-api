@@ -8,7 +8,9 @@ export function Footer() {
       <div className="container mx-auto max-w-6xl px-4 py-8">
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
           <div className="flex flex-col items-center gap-1 sm:items-start">
-            <span className="font-serif text-lg font-bold text-ink">Pino Blog</span>
+            <span className="font-serif text-lg font-bold text-ink">
+              Pino Blog
+            </span>
             <p className="text-xs text-muted">Ideas worth reading.</p>
           </div>
 

@@ -13,7 +13,11 @@ function getPageNumbers(current: number, total: number): (number | '...')[] {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
   const pages: (number | '...')[] = [1];
   if (current > 3) pages.push('...');
-  for (let p = Math.max(2, current - 1); p <= Math.min(total - 1, current + 1); p++) {
+  for (
+    let p = Math.max(2, current - 1);
+    p <= Math.min(total - 1, current + 1);
+    p++
+  ) {
     pages.push(p);
   }
   if (current < total - 2) pages.push('...');
@@ -45,7 +49,10 @@ function Pagination({
 
       {getPageNumbers(page, totalPages).map((p, i) =>
         p === '...' ? (
-          <span key={`ellipsis-${i}`} className="px-2 text-sm text-muted select-none">
+          <span
+            key={`ellipsis-${i}`}
+            className="px-2 text-sm text-muted select-none"
+          >
             …
           </span>
         ) : (
@@ -53,7 +60,7 @@ function Pagination({
             key={p}
             variant={p === page ? 'secondary' : 'ghost'}
             size="sm"
-            onClick={() => onPageChange(p as number)}
+            onClick={() => onPageChange(p)}
           >
             {p}
           </Button>

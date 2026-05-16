@@ -60,7 +60,13 @@ export class PostsService {
   async findAll(
     page = 1,
     limit = 12,
-  ): Promise<{ data: Post[]; total: number; page: number; limit: number; totalPages: number }> {
+  ): Promise<{
+    data: Post[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     const [data, total] = await this.postRepository.findAndCount({
       where: { isDraft: false },
       relations: ['author.profile', 'categories'],
@@ -162,7 +168,13 @@ export class PostsService {
     q: string,
     page = 1,
     limit = 12,
-  ): Promise<{ data: Post[]; total: number; page: number; limit: number; totalPages: number }> {
+  ): Promise<{
+    data: Post[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     if (!q?.trim()) return { data: [], total: 0, page, limit, totalPages: 0 };
     const tsquery = q
       .trim()

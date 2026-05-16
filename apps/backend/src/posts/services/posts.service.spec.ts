@@ -283,12 +283,24 @@ describe('PostsService', () => {
   describe('search', () => {
     it('REQ-3.14: returns empty paginated result when query is empty', async () => {
       const result = await service.search('', 1, 12);
-      expect(result).toEqual({ data: [], total: 0, page: 1, limit: 12, totalPages: 0 });
+      expect(result).toEqual({
+        data: [],
+        total: 0,
+        page: 1,
+        limit: 12,
+        totalPages: 0,
+      });
     });
 
     it('REQ-3.15: returns empty paginated result when query is whitespace', async () => {
       const result = await service.search('   ', 1, 12);
-      expect(result).toEqual({ data: [], total: 0, page: 1, limit: 12, totalPages: 0 });
+      expect(result).toEqual({
+        data: [],
+        total: 0,
+        page: 1,
+        limit: 12,
+        totalPages: 0,
+      });
     });
   });
 

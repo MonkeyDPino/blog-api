@@ -29,7 +29,10 @@ export function PostCard({ post }: PostCardProps) {
   });
 
   return (
-    <Link href={`/posts/${post.id}`} className="group flex flex-col rounded-xl border border-border bg-surface overflow-hidden hover:border-primary/40 transition-colors duration-200">
+    <Link
+      href={`/posts/${post.id}`}
+      className="group flex flex-col rounded-xl border border-border bg-surface overflow-hidden hover:border-primary/40 transition-colors duration-200"
+    >
       {post.coverImage && (
         <div className="aspect-video overflow-hidden">
           <img

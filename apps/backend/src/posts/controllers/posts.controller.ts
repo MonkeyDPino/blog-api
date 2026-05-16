@@ -46,9 +46,22 @@ export class PostsController {
   }
 
   @ApiOperation({ summary: 'Get all published blog posts (paginated)' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default 1)' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default 12)' })
-  @ApiResponse({ status: 200, description: 'Paginated list of published posts' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (default 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Items per page (default 12)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated list of published posts',
+  })
   @Get()
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
@@ -59,9 +72,22 @@ export class PostsController {
 
   @ApiOperation({ summary: 'Full-text search posts by keyword (paginated)' })
   @ApiQuery({ name: 'q', required: false, description: 'Search query' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default 1)' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default 12)' })
-  @ApiResponse({ status: 200, description: 'Paginated search results ordered by relevance' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (default 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Items per page (default 12)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated search results ordered by relevance',
+  })
   @Get('search')
   search(
     @Query('q') q: string,

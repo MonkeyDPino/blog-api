@@ -8,6 +8,7 @@ import {
   Put,
   Patch,
   ParseIntPipe,
+  DefaultValuePipe,
   Query,
   UseGuards,
   Req,
@@ -44,26 +45,30 @@ export class PostsController {
     return this.postsService.create(createPostDto, user.sub);
   }
 
-  @ApiOperation({ summary: 'Get all blog posts' })
-  @ApiResponse({
-    status: 200,
-    description: 'List of blog posts',
-    type: [PostEntity],
-  })
+  @ApiOperation({ summary: 'Get all published blog posts (paginated)' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default 1)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default 12)' })
+  @ApiResponse({ status: 200, description: 'Paginated list of published posts' })
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(12), ParseIntPipe) limit: number,
+  ) {
+    return this.postsService.findAll(page, limit);
   }
 
-  @ApiOperation({ summary: 'Full-text search posts by keyword' })
+  @ApiOperation({ summary: 'Full-text search posts by keyword (paginated)' })
   @ApiQuery({ name: 'q', required: false, description: 'Search query' })
-  @ApiResponse({
-    status: 200,
-    description: 'Returns matching posts ordered by relevance',
-  })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default 1)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default 12)' })
+  @ApiResponse({ status: 200, description: 'Paginated search results ordered by relevance' })
   @Get('search')
-  search(@Query('q') q: string): Promise<PostEntity[]> {
-    return this.postsService.search(q);
+  search(
+    @Query('q') q: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(12), ParseIntPipe) limit: number,
+  ) {
+    return this.postsService.search(q, page, limit);
   }
 
   @ApiOperation({ summary: 'Get a blog post by ID' })

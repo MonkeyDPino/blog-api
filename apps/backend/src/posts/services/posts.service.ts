@@ -57,10 +57,18 @@ export class PostsService {
     return post;
   }
 
-  async findAll(): Promise<Post[]> {
-    return this.postRepository.find({
+  async findAll(
+    page = 1,
+    limit = 12,
+  ): Promise<{ data: Post[]; total: number; page: number; limit: number; totalPages: number }> {
+    const [data, total] = await this.postRepository.findAndCount({
+      where: { isDraft: false },
       relations: ['author.profile', 'categories'],
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { createdAt: 'DESC' },
     });
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   async findByCategory(categoryId: number): Promise<Post[]> {
@@ -150,14 +158,18 @@ export class PostsService {
     return { suggestions };
   }
 
-  async search(q: string): Promise<Post[]> {
-    if (!q?.trim()) return [];
+  async search(
+    q: string,
+    page = 1,
+    limit = 12,
+  ): Promise<{ data: Post[]; total: number; page: number; limit: number; totalPages: number }> {
+    if (!q?.trim()) return { data: [], total: 0, page, limit, totalPages: 0 };
     const tsquery = q
       .trim()
       .split(/\s+/)
       .map((w) => `${w}:*`)
       .join(' & ');
-    return this.postRepository
+    const [data, total] = await this.postRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.author', 'author')
       .leftJoinAndSelect('author.profile', 'profile')
@@ -165,10 +177,14 @@ export class PostsService {
       .where(`post.search_vector @@ to_tsquery('english', :tsquery)`, {
         tsquery,
       })
+      .andWhere('post.isDraft = false')
       .orderBy(
         `ts_rank(post.search_vector, to_tsquery('english', :tsquery))`,
         'DESC',
       )
-      .getMany();
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 }

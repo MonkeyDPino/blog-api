@@ -1,13 +1,16 @@
-import type { IPost } from '@blog/types';
+import type { IPaginated, IPost } from '@blog/types';
 import { apiClient } from './client';
 
 export const postsApi = {
-  getAll: () => apiClient<IPost[]>('/posts'),
+  getAll: (page = 1, limit = 12) =>
+    apiClient<IPaginated<IPost>>(`/posts?page=${page}&limit=${limit}`),
 
   getOne: (id: number) => apiClient<IPost>(`/posts/${id}`),
 
-  search: (q: string) =>
-    apiClient<IPost[]>(`/posts/search?q=${encodeURIComponent(q)}`),
+  search: (q: string, page = 1, limit = 12) =>
+    apiClient<IPaginated<IPost>>(
+      `/posts/search?q=${encodeURIComponent(q)}&page=${page}&limit=${limit}`,
+    ),
 
   create: (data: Partial<IPost> & { title: string; categoryIds?: number[] }) =>
     apiClient<IPost>('/posts', {

@@ -5,7 +5,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
-  title: 'Blog App',
+  title: 'Pino Blog',
   description: 'A modern blog application',
 };
 

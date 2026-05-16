@@ -17,9 +17,11 @@ describe('PostsService', () => {
     findOne: jest.Mock;
     save: jest.Mock;
     find: jest.Mock;
+    findAndCount: jest.Mock;
     merge: jest.Mock;
     remove: jest.Mock;
     query: jest.Mock;
+    createQueryBuilder: jest.Mock;
   };
   let categoryRepository: { find: jest.Mock };
   let geminiService: {
@@ -37,9 +39,11 @@ describe('PostsService', () => {
             findOne: jest.fn(),
             save: jest.fn(),
             find: jest.fn(),
+            findAndCount: jest.fn(),
             merge: jest.fn(),
             remove: jest.fn(),
             query: jest.fn().mockResolvedValue(undefined),
+            createQueryBuilder: jest.fn(),
           },
         },
         {
@@ -74,13 +78,23 @@ describe('PostsService', () => {
   });
 
   describe('findAll', () => {
-    it('REQ-3.1: returns all posts with author and categories', async () => {
+    it('REQ-3.1: returns paginated published posts with author and categories', async () => {
       const posts = [buildPost(), buildPost({ id: 2, title: 'Second Post' })];
-      postRepository.find.mockResolvedValue(posts);
-      const result = await service.findAll();
-      expect(result).toEqual(posts);
-      expect(postRepository.find).toHaveBeenCalledWith({
+      postRepository.findAndCount.mockResolvedValue([posts, 2]);
+      const result = await service.findAll(1, 12);
+      expect(result).toEqual({
+        data: posts,
+        total: 2,
+        page: 1,
+        limit: 12,
+        totalPages: 1,
+      });
+      expect(postRepository.findAndCount).toHaveBeenCalledWith({
+        where: { isDraft: false },
         relations: ['author.profile', 'categories'],
+        skip: 0,
+        take: 12,
+        order: { createdAt: 'DESC' },
       });
     });
   });
@@ -267,14 +281,14 @@ describe('PostsService', () => {
   });
 
   describe('search', () => {
-    it('REQ-3.14: returns empty array when query is empty', async () => {
-      const result = await service.search('');
-      expect(result).toEqual([]);
+    it('REQ-3.14: returns empty paginated result when query is empty', async () => {
+      const result = await service.search('', 1, 12);
+      expect(result).toEqual({ data: [], total: 0, page: 1, limit: 12, totalPages: 0 });
     });
 
-    it('REQ-3.15: returns empty array when query is whitespace', async () => {
-      const result = await service.search('   ');
-      expect(result).toEqual([]);
+    it('REQ-3.15: returns empty paginated result when query is whitespace', async () => {
+      const result = await service.search('   ', 1, 12);
+      expect(result).toEqual({ data: [], total: 0, page: 1, limit: 12, totalPages: 0 });
     });
   });
 

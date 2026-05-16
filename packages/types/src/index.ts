@@ -6,6 +6,7 @@ export type {
   IMeResponse,
 } from './auth.interface';
 export type {
+  IPaginated,
   ApiErrorBody,
   AiImproveResponse,
   AiSuggestCategoriesResponse,

@@ -19,7 +19,7 @@ export function Navbar() {
           href="/"
           className="font-semibold text-ink hover:text-primary transition-colors"
         >
-          Blog App
+          Pino Blog
         </Link>
 
         <div className="flex items-center gap-1">

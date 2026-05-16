@@ -16,7 +16,12 @@ const schema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Enter a valid email'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  password: z
+    .string()
+    .min(8, 'At least 8 characters')
+    .regex(/[A-Z]/, 'At least one uppercase letter')
+    .regex(/\d/, 'At least one number')
+    .regex(/[^A-Za-z0-9]/, 'At least one special character'),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -61,14 +66,14 @@ export function RegisterForm() {
           <Label htmlFor="firstName">First name</Label>
           <Input id="firstName" placeholder="John" {...register('firstName')} />
           {errors.firstName && (
-            <p className="text-xs text-red-600">{errors.firstName.message}</p>
+            <p className="text-xs text-red-400">{errors.firstName.message}</p>
           )}
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="lastName">Last name</Label>
           <Input id="lastName" placeholder="Doe" {...register('lastName')} />
           {errors.lastName && (
-            <p className="text-xs text-red-600">{errors.lastName.message}</p>
+            <p className="text-xs text-red-400">{errors.lastName.message}</p>
           )}
         </div>
       </div>
@@ -83,7 +88,7 @@ export function RegisterForm() {
           {...register('email')}
         />
         {errors.email && (
-          <p className="text-xs text-red-600">{errors.email.message}</p>
+          <p className="text-xs text-red-400">{errors.email.message}</p>
         )}
       </div>
 
@@ -93,16 +98,16 @@ export function RegisterForm() {
           id="password"
           type="password"
           autoComplete="new-password"
-          placeholder="At least 8 characters"
+          placeholder="Min 8 chars, uppercase, number, symbol"
           {...register('password')}
         />
         {errors.password && (
-          <p className="text-xs text-red-600">{errors.password.message}</p>
+          <p className="text-xs text-red-400">{errors.password.message}</p>
         )}
       </div>
 
       {errors.root && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">
+        <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-400">
           {errors.root.message}
         </p>
       )}

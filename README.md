@@ -1,104 +1,184 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Pino Blog
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A full-stack blog platform with AI-powered features, built as a pnpm monorepo.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+**Live:** [blog-app.pinodev.app](https://blog-app.pinodev.app) · **API:** [blog-api.pinodev.app](https://blog-api.pinodev.app)
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Stack
 
-## Project setup
+| Layer | Technology |
+|---|---|
+| Backend | NestJS · TypeORM · PostgreSQL |
+| Frontend | Next.js 15 (App Router) · Tailwind CSS v4 |
+| Auth | JWT (httpOnly cookies) · bcrypt · refresh tokens |
+| AI | Google Gemini — summaries & category suggestions |
+| Search | PostgreSQL full-text search (`tsvector` + GIN index) |
+| Infra | Docker Compose · pnpm workspaces |
 
-```bash
-$ pnpm install
+---
+
+## Features
+
+- **Public blog** — paginated post feed with inline debounced search
+- **Markdown rendering** — posts written and rendered as Markdown
+- **AI summaries** — Gemini generates a summary on publish
+- **AI category suggestions** — Gemini suggests relevant categories based on content
+- **Cookie-based auth** — httpOnly JWT access token + rotating refresh tokens
+- **Role-based access** — `admin` and `writer` roles
+- **Admin panel** — full CRUD for posts and categories
+- **Draft system** — posts start as drafts, published explicitly
+
+---
+
+## Project Structure
+
+```
+/
+├── apps/
+│   ├── backend/          # NestJS API  (@blog/backend)
+│   └── frontend/         # Next.js app (@blog/frontend)
+├── packages/
+│   └── types/            # Shared TypeScript interfaces (@blog/types)
+├── scripts/
+│   └── seed.sh           # Database seeder (30 posts, 5 users, 10 categories)
+├── docker-compose.yml    # PostgreSQL + PgAdmin
+└── .env                  # Environment variables (monorepo root)
 ```
 
-## Compile and run the project
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+
+- pnpm
+- Docker
+
+### 1. Clone and install
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+git clone https://github.com/MonkeyDPino/blog-app.git
+cd blog-app
+pnpm install
 ```
 
-## Run tests
+### 2. Start the database
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+docker compose up -d
 ```
 
-## Deployment
+### 3. Configure environment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Create a `.env` file at the monorepo root:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```env
+# PostgreSQL
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DB=my_blog_db
+POSTGRES_USER=blog_user
+POSTGRES_PASSWORD=blog_password
+
+# Backend
+PORT=3000
+JWT_SECRET=your_jwt_secret
+JWT_ISSUER=blog-api
+JWT_AUDIENCE=blog-app
+
+# Gemini AI
+GEMINI_API_KEY=your_gemini_api_key
+
+# CORS
+FRONTEND_URL=http://localhost:3001
+```
+
+### 4. Run migrations
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+cd apps/backend
+pnpm migration:run
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 5. Seed the database
 
-## For Production
+```bash
+./scripts/seed.sh --reset
+```
 
-npm run build
-npm run typeorm migration:run
-npm run start:prod
+### 6. Start development servers
 
-## Resources
+```bash
+# From monorepo root
+pnpm dev
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+Backend runs on `http://localhost:3000` · Frontend on `http://localhost:3001`
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## Commands
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+# Development
+pnpm dev                  # Start backend in watch mode
+pnpm lint                 # ESLint with autofix (all workspaces)
+pnpm format               # Prettier (all workspaces)
 
-## Stay in touch
+# Testing
+pnpm test                 # Unit tests
+pnpm test:e2e             # E2E tests (requires running DB)
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Database
+pnpm migration:generate   # Generate migration from entity changes
+pnpm migration:run        # Apply pending migrations
+pnpm migration:show       # List migration status
+
+# Seed
+./scripts/seed.sh         # Idempotent seed (ON CONFLICT DO NOTHING)
+./scripts/seed.sh --reset # Truncate tables and re-seed
+```
+
+---
+
+## API Overview
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `POST` | `/auth/login` | — | Login, sets httpOnly cookies |
+| `POST` | `/auth/refresh` | cookie | Rotate access + refresh tokens |
+| `POST` | `/auth/logout` | JWT | Revoke refresh token |
+| `GET` | `/auth/me` | JWT | Current user |
+| `GET` | `/posts` | — | Paginated post feed |
+| `GET` | `/posts/search?q=` | — | Full-text search |
+| `POST` | `/posts` | JWT | Create draft |
+| `POST` | `/posts/:id/publish` | JWT | Publish + generate AI summary |
+| `POST` | `/posts/:id/suggest-categories` | JWT | AI category suggestions |
+| `GET` | `/categories` | — | All categories |
+| `GET` | `/users/:id/posts` | JWT | Posts by user |
+
+Full interactive docs (dev only): `http://localhost:3000/docs`
+
+---
+
+## Auth Flow
+
+```
+Login → backend sets access_token (httpOnly, 6h) on API domain
+                    + refresh_token_id / refresh_token_value (httpOnly, 7d)
+      → frontend sets session_active (1h) on its own domain for middleware
+
+Expired access token → client calls /auth/refresh automatically
+Failed refresh → auth:expired event → session cleared
+```
+
+The Next.js middleware reads `session_active` (a non-sensitive flag cookie on the frontend domain) since the real JWT lives on the API domain and is inaccessible server-side from the frontend.
+
+---
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+MIT
